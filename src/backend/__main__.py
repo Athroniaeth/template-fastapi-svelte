@@ -1,6 +1,6 @@
 import logging
 
-from src.app.cli import cli
+from backend._cli import cli
 
 
 def main() -> None:
@@ -10,7 +10,6 @@ def main() -> None:
     except Exception as e:
         logging.error(e)
         raise e
-        exit(1)
     except KeyboardInterrupt:
         logging.info("User interrupted the program.")
         exit(0)

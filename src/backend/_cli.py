@@ -5,7 +5,7 @@ cli = Typer()
 
 @cli.command()
 def run(
-    source: str = "src.app.app:app",
+    source: str = "src.backend._app:app",
     host: str = "localhost",
     port: int = 8000,
 ):
