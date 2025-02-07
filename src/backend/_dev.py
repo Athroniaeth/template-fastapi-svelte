@@ -5,6 +5,9 @@ import httpx
 from fastapi import FastAPI, Request
 from jinja2 import Template
 from starlette.responses import StreamingResponse
+from starlette.templating import Jinja2Templates
+
+from backend import TEMPLATES_PATH
 
 # Create a global HTTP client to reuse connections
 client: Optional[httpx.AsyncClient] = None
@@ -21,9 +24,20 @@ async def lifespan(app: FastAPI):
 
 # Create the FastAPI app with the lifespan context manager
 app = FastAPI(lifespan=lifespan)
+templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
 # Address of your Vite development server (change if needed)
-VITE_DEV_SERVER = "http://localhost:5173/"
+VITE_DEV_SERVER = "http://localhost:5173"
+
+
+@app.get("/")
+async def index(request: Request):
+    # Parse index.html, inject before the script tag
+    template = templates.get_template("index.jinja2")
+    render_html = template.render({"name": "Hello World!"})
+    render_html += f'\n\n<script type="module" src="{VITE_DEV_SERVER}/@vite/client"></script>'
+    render_html += f'\n\n<script type="module" src="{VITE_DEV_SERVER}/main.ts"></script>'
+    return StreamingResponse(content=render_html, media_type="text/html")
 
 
 @app.get("/{full_path:path}")
@@ -32,7 +46,7 @@ async def proxy_request(request: Request, full_path: str):
     headers = dict(request.headers)
 
     # Build destination URL preserving the path and query params
-    url = f"{VITE_DEV_SERVER}{full_path}"
+    url = f"{VITE_DEV_SERVER}/{full_path}"
 
     # Fetch the response from Vite using the global client
     response = await client.get(

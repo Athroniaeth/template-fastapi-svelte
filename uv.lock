@@ -379,7 +379,7 @@ wheels = [
 [[package]]
 name = "template-fastapi-svelte"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx", extra = ["http2"] },
@@ -400,9 +400,6 @@ requires-dist = [
     { name = "uvicorn", specifier = ">=0.34.0" },
     { name = "websockets", specifier = ">=14.2" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "template-fastapi-svelte", editable = "." }]
 
 [[package]]
 name = "typer"
