@@ -35,8 +35,12 @@ async def index(request: Request):
     # Parse index.html, inject before the script tag
     template = templates.get_template("index.jinja2")
     render_html = template.render({"name": "Hello World!"})
-    render_html += f'\n\n<script type="module" src="{VITE_DEV_SERVER}/@vite/client"></script>'
-    render_html += f'\n\n<script type="module" src="{VITE_DEV_SERVER}/main.ts"></script>'
+    render_html += (
+        f'\n\n<script type="module" src="{VITE_DEV_SERVER}/@vite/client"></script>'
+    )
+    render_html += (
+        f'\n\n<script type="module" src="{VITE_DEV_SERVER}/main.ts"></script>'
+    )
     return StreamingResponse(content=render_html, media_type="text/html")
 
 
