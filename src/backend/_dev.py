@@ -7,7 +7,8 @@ from jinja2 import Template
 from starlette.responses import StreamingResponse
 from starlette.templating import Jinja2Templates
 
-from backend import TEMPLATES_PATH
+from backend import TEMPLATES_PATH, VITE_DEV_SERVER
+from backend._vite import get_template_response
 
 # Create a global HTTP client to reuse connections
 client: Optional[httpx.AsyncClient] = None
@@ -26,21 +27,20 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
-# Address of your Vite development server (change if needed)
-VITE_DEV_SERVER = "http://localhost:5173"
-
 
 @app.get("/")
 async def index(request: Request):
-    # Parse index.html, inject before the script tag
-    template = templates.get_template("index.jinja2")
-    render_html = template.render({"name": "Hello World!"})
-    render_html += (
-        f'\n\n<script type="module" src="{VITE_DEV_SERVER}/@vite/client"></script>'
+    render_html = get_template_response(
+        templates,
+        template_name="index.jinja2",
+        entry_point="src/main.ts",
+        is_development=True,
+        request=request,
+        dict_response={
+            "name": "Hello World!",
+        },
     )
-    render_html += (
-        f'\n\n<script type="module" src="{VITE_DEV_SERVER}/main.ts"></script>'
-    )
+
     return StreamingResponse(content=render_html, media_type="text/html")
 
 
@@ -51,11 +51,10 @@ async def proxy_request(request: Request, full_path: str):
 
     # Build destination URL preserving the path and query params
     url = f"{VITE_DEV_SERVER}/{full_path}"
+    params = request.query_params
 
     # Fetch the response from Vite using the global client
-    response = await client.get(
-        url, params=request.query_params, headers=headers, timeout=None
-    )
+    response = await client.get(url, params=params, headers=headers, timeout=None)
 
     # Inject the auto-reload script in the HTML if the URL targets an HTML file
     if url.endswith((".html", ".htm", "/")):
