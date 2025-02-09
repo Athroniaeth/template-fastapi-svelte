@@ -1,6 +1,9 @@
 import logging
+import os
 
 from typer import Typer
+
+from backend._vite import check_vite_running
 
 cli = Typer(
     help="CLI for the FastAPI application.",
@@ -11,34 +14,22 @@ cli = Typer(
 
 
 @cli.command()
-def dev(
-    source: str = "src.backend._dev:app",
-    host: str = "localhost",
-    port: int = 8000,
-):
-    """Run the FastAPI application with the Vite development server."""
-    import uvicorn
-    import requests
-
-    logging.info("Checking if Vite development server is running...")
-
-    try:
-        requests.get("http://localhost:5173/", timeout=0.1)
-    except requests.exceptions.ConnectionError:
-        raise ValueError(
-            "Vite development server is not running. Please use `npm run dev` to start it."
-        )
-
-    uvicorn.run(source, host=host, port=port)
-
-
-@cli.command()
 def run(
-    source: str = "src.backend._app:app",
+    source: str = "backend._app:app",
     host: str = "localhost",
     port: int = 8000,
+    dev_mode: bool = False,
 ):
     """Run the FastAPI application."""
     import uvicorn
 
+    check_vite_running() if dev_mode else ...
+    os.environ["DEV_MODE"] = "true" if dev_mode else "false"
+    logging.info(f"Running FastAPI application at http://{host}:{port}")
     uvicorn.run(source, host=host, port=port)
+
+
+@cli.command()
+def hello_world():
+    """Fake command for force Typer to list commands."""
+    ...
