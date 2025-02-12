@@ -1,13 +1,27 @@
 import json
 import logging
+from functools import partial
+from pathlib import Path
 from typing import Optional, Dict, Any
 
 import requests
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
-from backend import MANIFEST_PATH, VITE_DEV_SERVER
+from backend import MANIFEST_PATH, VITE_DEV_SERVER, TEMPLATES_PATH
 
+
+def get_template_vite(
+        dev_mode: bool,
+        path: Path = TEMPLATES_PATH,
+) -> Jinja2Templates:
+    """ Get the Jinja2 templates object with Vite assets. """
+    logging.info(f"Development mode: {dev_mode}")
+
+    templates = Jinja2Templates(directory=path)
+    templates.env.globals['asset'] = partial(vite_asset, is_development=dev_mode)
+
+    return templates
 
 def get_template_response(
     templates: Jinja2Templates,
@@ -85,3 +99,22 @@ def check_vite_running():
         raise ValueError(
             "Vite development server is not running. Please use `npm run dev` to start it."
         )
+
+
+def vite_asset(asset_path: str, is_development: bool = False) -> str:
+    """
+    Return the URL of an asset, either from the Vite dev server or manifest.
+
+    Args:
+        asset_path (str): The path of the asset.
+        is_development (bool): Whether to use the Vite dev server or manifest.
+
+    Returns:
+        str: The URL of the asset (either on the Vite dev server or manifest).
+    """
+    if is_development:
+        # En dev, on renvoie directement l'URL du serveur de Vite
+        return f"{VITE_DEV_SERVER}/{asset_path}"
+    else:
+        # En production, on lit le manifest généré par Vite
+        return asset_path[3:] # Remove the "src" prefix

@@ -19,6 +19,7 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
+    "glob": "^11.0.1",
     "vite-plugin-static-copy": "^2.2.0"
   }
 }

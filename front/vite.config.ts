@@ -1,9 +1,9 @@
 import type {Plugin, ViteDevServer} from 'vite'
 import {defineConfig} from 'vite'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
-
+import {glob} from 'glob'
 import fs from 'fs'
-import path from 'path'
+import path, {resolve} from 'path'
 import {viteStaticCopy} from 'vite-plugin-static-copy'
 
 function watchJinja2(): Plugin {
@@ -30,8 +30,8 @@ export default defineConfig({
         viteStaticCopy({
             targets: [
                 {
-                    src: '../templates/*.jinja2', // relative to project root
-                    dest: 'templates' // will be copied to `dist/templates`
+                    src: 'src/assets/**/*.{png,jpg,jpeg,svg,avif}', // relative to project root
+                    dest: 'assets' // will be copied to `dist/assets`
                 }
             ]
         })
@@ -41,7 +41,7 @@ export default defineConfig({
         manifest: true,
         rollupOptions: {
             input: {
-                main: 'src/main.ts'
+                main: 'src/main.ts',
             }
         }
     },

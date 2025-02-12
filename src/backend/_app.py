@@ -12,7 +12,7 @@ from starlette.templating import Jinja2Templates
 
 from backend import DIST_PATH
 from backend import TEMPLATES_PATH, VITE_DEV_SERVER
-from backend._vite import get_template_response
+from backend._vite import get_template_response, get_template_vite
 
 # Create a global HTTP client to reuse connections
 client: Optional[httpx.AsyncClient] = None
@@ -30,8 +30,8 @@ async def lifespan(app: FastAPI):
 
 # Create the FastAPI app
 app = FastAPI(lifespan=lifespan)
-templates = Jinja2Templates(directory=TEMPLATES_PATH)
 dev_mode = os.getenv("DEV_MODE", "false").lower() == "true"
+templates = get_template_vite(dev_mode)
 logging.info(f"Development mode: {dev_mode}")
 
 
