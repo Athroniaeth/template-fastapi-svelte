@@ -12,16 +12,17 @@ from backend import MANIFEST_PATH, VITE_DEV_SERVER, TEMPLATES_PATH
 
 
 def get_template_vite(
-        dev_mode: bool,
-        path: Path = TEMPLATES_PATH,
+    dev_mode: bool,
+    path: Path = TEMPLATES_PATH,
 ) -> Jinja2Templates:
-    """ Get the Jinja2 templates object with Vite assets. """
+    """Get the Jinja2 templates object with Vite assets."""
     logging.info(f"Development mode: {dev_mode}")
 
     templates = Jinja2Templates(directory=path)
-    templates.env.globals['asset'] = partial(vite_asset, is_development=dev_mode)
+    templates.env.globals["asset"] = partial(vite_asset, is_development=dev_mode)
 
     return templates
+
 
 def get_template_response(
     templates: Jinja2Templates,
@@ -117,4 +118,4 @@ def vite_asset(asset_path: str, is_development: bool = False) -> str:
         return f"{VITE_DEV_SERVER}/{asset_path}"
     else:
         # En production, on lit le manifest généré par Vite
-        return asset_path[3:] # Remove the "src" prefix
+        return asset_path[3:]  # Remove the "src" prefix

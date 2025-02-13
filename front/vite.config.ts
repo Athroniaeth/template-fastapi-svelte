@@ -1,10 +1,11 @@
 import type {Plugin, ViteDevServer} from 'vite'
 import {defineConfig} from 'vite'
-import {svelte} from '@sveltejs/vite-plugin-svelte'
-import {glob} from 'glob'
 import fs from 'fs'
-import path, {resolve} from 'path'
-import {viteStaticCopy} from 'vite-plugin-static-copy'
+import path from 'path'
+import {svelte} from '@sveltejs/vite-plugin-svelte'
+
+// import {viteStaticCopy} from 'vite-plugin-static-copy'
+
 
 function watchJinja2(): Plugin {
     return {
@@ -27,21 +28,27 @@ export default defineConfig({
     plugins: [
         svelte(),
         watchJinja2(),
+        /*
         viteStaticCopy({
             targets: [
                 {
-                    src: 'src/assets/**/*.{png,jpg,jpeg,svg,avif}', // relative to project root
+                    src: 'src,assets,**,*.{png,jpg,jpeg,svg,avif}', // relative to project root
                     dest: 'assets' // will be copied to `dist/assets`
                 }
             ]
         })
+        */
     ],
 
     build: {
+        outDir: './dist',
+        assetsDir: 'assets',
+        emptyOutDir: true,
         manifest: true,
         rollupOptions: {
             input: {
-                main: 'src/main.ts',
+                index: 'src/main.ts',
+                //...glob.sync(resolve(__dirname, "src/**/*.svg")),
             }
         }
     },

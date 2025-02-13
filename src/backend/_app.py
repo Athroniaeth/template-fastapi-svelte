@@ -8,10 +8,9 @@ from fastapi import FastAPI, Request
 from starlette.responses import HTMLResponse
 from starlette.responses import StreamingResponse
 from starlette.staticfiles import StaticFiles
-from starlette.templating import Jinja2Templates
 
 from backend import DIST_PATH
-from backend import TEMPLATES_PATH, VITE_DEV_SERVER
+from backend import VITE_DEV_SERVER
 from backend._vite import get_template_response, get_template_vite
 
 # Create a global HTTP client to reuse connections
