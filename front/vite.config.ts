@@ -3,8 +3,7 @@ import {defineConfig} from 'vite'
 import fs from 'fs'
 import path from 'path'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
-
-// import {viteStaticCopy} from 'vite-plugin-static-copy'
+import {viteStaticCopy} from "vite-plugin-static-copy";
 
 
 function watchJinja2(): Plugin {
@@ -28,16 +27,16 @@ export default defineConfig({
     plugins: [
         svelte(),
         watchJinja2(),
-        /*
+
         viteStaticCopy({
             targets: [
                 {
-                    src: 'src,assets,**,*.{png,jpg,jpeg,svg,avif}', // relative to project root
-                    dest: 'assets' // will be copied to `dist/assets`
+                    src: 'src/assets/**/*.{png,jpg,jpeg,svg,avif}', // chemin relatif à la racine du projet
+                    dest: 'assets' // sera copié dans dist/assets
                 }
             ]
         })
-        */
+
     ],
 
     build: {
